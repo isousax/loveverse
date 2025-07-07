@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 import Bolha from '../assets/bolha.svg'
 
 function calcularTempo(startDate) {
@@ -66,15 +67,39 @@ export default function Hero({ startDate }) {
 
   const bolhas = isMobile ? bolhasMobile : bolhasDesktop
 
+  // Container com staggerChildren para animação sequencial vertical
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.3,
+      },
+    },
+  }
+
+  // Variante para cada item tipo "balão surgindo de cima pra baixo"
+  const itemVariants = {
+  hidden: { opacity: 0, y: -10, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.8,
+      ease: 'easeOut',
+    },
+  },
+}
+
   return (
     <section
-      className="hero-section flex items-center justify-center text-white text-center px-6 relative snap-start snap-always min-h-screen overflow-hidden"
+      className="hero-section flex items-center justify-center text-white text-center px-6 relative snap-start snap-always min-h-screen overflow-hidden pb-24 md:pb-0"
       style={{
         background:
           'linear-gradient(135deg, rgb(99, 102, 241), rgb(236, 72, 153))',
       }}
     >
-      {/* Bolhas animadas de fundo */}
+      {/* Bolhas animadas */}
       {bolhas.map((b, i) => (
         <img
           key={i}
@@ -92,80 +117,101 @@ export default function Hero({ startDate }) {
         />
       ))}
 
-      <div className="relative z-10 max-w-4xl">
-        <h1 className="text-4xl md:text-8xl font-bold mb-8 tracking-tight">
+      <motion.div
+        className="relative z-10 max-w-4xl flex flex-col items-center"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.h1
+          className="text-4xl md:text-8xl font-bold mb-8 tracking-tight"
+          variants={itemVariants}
+        >
           Nossa História
-        </h1>
-        <p className="hero-subtitle text-xl md:text-2xl text-white mb-12">
-          Uma jornada de amor e momentos inesquecíveis
-        </p>
+        </motion.h1>
 
-        <div className="flex flex-col items-center mt-10">
-          {/* Animação Terra-Sol */}
-          <div className="relative w-48 h-48 md:w-64 md:h-64 mb-10">
-            {/* Sol */}
+        <motion.p
+          className="hero-subtitle text-xl md:text-2xl text-white mb-12"
+          variants={itemVariants}
+        >
+          Uma jornada de amor e momentos inesquecíveis
+        </motion.p>
+
+        <motion.div
+          className="relative w-48 h-48 md:w-64 md:h-64 mb-10"
+          variants={itemVariants}
+        >
+          {/* Sol */}
+          <div
+            className="absolute top-1/2 left-1/2 rounded-full bg-yellow-400"
+            style={{
+              width: '60px',
+              height: '60px',
+              transform: 'translate(-50%, -50%)',
+              filter: 'drop-shadow(0 0 12px rgba(255, 223, 0, 0.9))',
+              boxShadow:
+                '0 0 25px 10px rgba(255, 223, 0, 0.7), inset 0 0 15px 5px rgba(255, 244, 174, 0.8)',
+            }}
+          />
+          {/* Órbita */}
+          <div
+            className="absolute top-1/2 left-1/2 rounded-full border border-white/25"
+            style={{
+              width: '192px',
+              height: '192px',
+              transform: 'translate(-50%, -50%)',
+              animation: 'orbitRotate 25s linear infinite',
+            }}
+          >
+            {/* Terra */}
             <div
-              className="absolute top-1/2 left-1/2 rounded-full bg-yellow-400"
+              className="rounded-full"
               style={{
-                width: '60px',
-                height: '60px',
-                transform: 'translate(-50%, -50%)',
-                filter: 'drop-shadow(0 0 12px rgba(255, 223, 0, 0.9))',
+                width: '30px',
+                height: '30px',
+                position: 'absolute',
+                top: '50%',
+                left: '100%',
+                marginTop: '-15px',
+                marginLeft: '-15px',
+                background:
+                  'radial-gradient(circle at 30% 30%, #3b82f6, #2563eb 70%)',
                 boxShadow:
-                  '0 0 25px 10px rgba(255, 223, 0, 0.7), inset 0 0 15px 5px rgba(255, 244, 174, 0.8)',
+                  '0 0 10px 3px rgba(59, 130, 246, 0.7), inset 0 0 8px rgba(191, 219, 254, 0.9)',
               }}
             />
-            {/* Órbita */}
-            <div
-              className="absolute top-1/2 left-1/2 rounded-full border border-white/25"
-              style={{
-                width: '192px',
-                height: '192px',
-                transform: 'translate(-50%, -50%)',
-                animation: 'orbitRotate 25s linear infinite',
-              }}
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="grid grid-cols-4 gap-6"
+          variants={containerVariants}
+        >
+          {['dias', 'horas', 'minutos', 'segundos'].map((label, i) => (
+            <motion.div
+              className="flex flex-col items-center"
+              key={label}
+              variants={itemVariants}
             >
-              {/* Terra */}
-              <div
-                className="rounded-full"
-                style={{
-                  width: '30px',
-                  height: '30px',
-                  position: 'absolute',
-                  top: '50%',
-                  left: '100%',
-                  marginTop: '-15px',
-                  marginLeft: '-15px',
-                  background: 'radial-gradient(circle at 30% 30%, #3b82f6, #2563eb 70%)',
-                  boxShadow:
-                    '0 0 10px 3px rgba(59, 130, 246, 0.7), inset 0 0 8px rgba(191, 219, 254, 0.9)',
-                }}
-              />
-            </div>
-          </div>
+              <span className="text-3xl md:text-5xl font-bold text-white">
+                {Object.values(tempo)[i]}
+              </span>
+              <span className="text-sm md:text-lg text-purple-200 mt-1">
+                {label}
+              </span>
+            </motion.div>
+          ))}
+        </motion.div>
 
-          {/* Contador */}
-          <div className="grid grid-cols-4 gap-6">
-            {['dias', 'horas', 'minutos', 'segundos'].map((label, i) => (
-              <div className="flex flex-col items-center" key={label}>
-                <span className="text-3xl md:text-5xl font-bold text-white">
-                  {Object.values(tempo)[i]}
-                </span>
-                <span className="text-sm md:text-lg text-purple-200 mt-1">
-                  {label}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {/* Frase dos anos */}
-          <div className="text-purple-200 mt-6 italic w-full max-w-md h-16 text-base md:text-xl md:whitespace-nowrap">
-            {tempo.anos === 0
-              ? 'Ainda estamos no começo da nossa jornada juntos...'
-              : `Já demos ${tempo.anos} volta${tempo.anos > 1 ? 's' : ''} ao redor do sol...`}
-          </div>
-        </div>
-      </div>
+        <motion.div
+          className="text-purple-200 mt-6 italic w-full max-w-md h-16 text-base md:text-xl md:whitespace-nowrap"
+          variants={itemVariants}
+        >
+          {tempo.anos === 0
+            ? 'Ainda estamos no começo da nossa jornada juntos...'
+            : `Já demos ${tempo.anos} volta${tempo.anos > 1 ? 's' : ''} ao redor do sol...`}
+        </motion.div>
+      </motion.div>
 
       <style>{`
         @keyframes orbitRotate {

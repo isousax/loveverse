@@ -1,7 +1,7 @@
 export default function MusicSection() {
     return (
         <section
-            className="h-screen flex items-center justify-center relative overflow-hidden snap-start snap-always"
+            className="h-screen flex items-center justify-center relative overflow-hidden snap-start snap-always pb-24 md:pb-0"
             style={{ background: 'rgb(18, 18, 18)', boxShadow: 'rgba(0, 0, 0, 0.7) 0px 0px 150px inset' }}
         >
             <div className="overflow-hidden container mx-auto px-4 relative z-10">
