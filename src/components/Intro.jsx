@@ -25,7 +25,6 @@ export default function Intro({ onFinish, startDate }) {
       }, 5000)
       return () => clearTimeout(timer)
     } else {
-      // última frase: aguarda 5s e chama onFinish
       const finishTimer = setTimeout(() => {
         if (onFinish) onFinish()
       }, 5000)
@@ -35,7 +34,7 @@ export default function Intro({ onFinish, startDate }) {
 
   return (
     <div
-      className="flex flex-col items-center justify-center h-screen px-4 text-center overflow-x-auto max-w-full overflow-y-visible"
+      className="flex flex-col items-center justify-center h-screen px-6 text-center overflow-visible"
       style={{ fontFamily: "'Poppins', sans-serif" }}
     >
       <AnimatePresence mode="wait">
@@ -45,21 +44,25 @@ export default function Intro({ onFinish, startDate }) {
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           exit={{ opacity: 0, y: -30, filter: 'blur(6px)' }}
           transition={{ duration: 1.2, ease: 'easeInOut' }}
-          className="inline-block w-auto max-w-full"
+          className="w-full max-w-[90vw] px-4" // << AQUI O AJUSTE
         >
+
           {index === 0 && (
-            <p className="text-gray-300 text-xl md:text-2xl font-light mb-3 leading-relaxed font-comicRelief whitespace-normal md:whitespace-nowrap">
+            <p className="text-gray-300 text-lg md:text-2xl font-light mb-3 leading-relaxed font-comicRelief">
               {formatarData(startDate)}
             </p>
           )}
           <p
             className="text-transparent text-3xl md:text-6xl font-bold
-              bg-gradient-to-r from-pink-500 via-purple-600 to-pink-500
-              bg-clip-text leading-relaxed font-comicRelief whitespace-normal md:whitespace-nowrap"
-            style={{ lineHeight: 1.3 }}
+    bg-gradient-to-r from-pink-500 via-purple-600 to-pink-500
+    bg-clip-text font-comicRelief
+    whitespace-normal break-words leading-[1.4]"
+            style={{ paddingBottom: '0.25em' }}
           >
             {phrases[index]}
           </p>
+
+
         </motion.div>
       </AnimatePresence>
     </div>
