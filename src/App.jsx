@@ -9,7 +9,7 @@ import MoonSection from './components/MoonSection'
 
 function ScrollHintIndicator({ onClick }) {
   return (
-    <div className="fixed inset-x-0 bottom-6 flex justify-center pointer-events-none z-50">
+    <div className="fixed inset-x-0 bottom-4 flex justify-center pointer-events-none z-50">
       <motion.div
         onClick={onClick}
         role="button"
