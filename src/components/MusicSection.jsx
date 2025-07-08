@@ -9,9 +9,9 @@ export default function MusicSection() {
                     <h2 className="mb-8 flex items-center justify-center">
                         <span
                             className="w-[90%] text-3xl md:text-6xl
-               text-transparent font-bold
-               bg-gradient-to-r from-pink-500 via-purple-600 to-pink-500
-               bg-clip-text"
+                                text-transparent font-bold
+                                bg-gradient-to-r from-pink-500 via-purple-600 to-pink-500
+                                bg-clip-text"
                         >
                             Que tal dar play na música que me faz reviver nossa história?
                         </span>

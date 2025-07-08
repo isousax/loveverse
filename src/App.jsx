@@ -6,6 +6,7 @@ import Hero from './components/Hero'
 import MusicSection from './components/MusicSection'
 import SeasonSection from './components/SeasonSection'
 import MoonSection from './components/MoonSection'
+import Signo from './components/Signo'
 
 function ScrollHintIndicator({ onClick }) {
   return (
@@ -92,6 +93,7 @@ export default function App() {
     <MusicSection key="music" />,
     <SeasonSection key="season" startDate={startDate} />,
     <MoonSection key="moon" startDate={startDate} />,
+    <Signo key="signo" startDate={startDate} />,
   ]
 
   return (
