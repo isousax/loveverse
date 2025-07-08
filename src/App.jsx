@@ -7,6 +7,8 @@ import MusicSection from './components/MusicSection'
 import SeasonSection from './components/SeasonSection'
 import MoonSection from './components/MoonSection'
 import Signo from './components/Signo'
+import { photoSections } from './data/photoSections'
+import PhotoSection from './components/PhotoSection'
 
 function ScrollHintIndicator({ onClick }) {
   return (
@@ -130,6 +132,15 @@ export default function App() {
     <SeasonSection key="season" startDate={startDate} />,
     <MoonSection key="moon" startDate={startDate} />,
     <Signo key="signo" startDate={startDate} />,
+    ...photoSections.map((section, i) => (
+      <PhotoSection
+        key={`photo-${i}`}
+        chapter={section.chapter}
+        title={section.title}
+        description={section.description}
+        image={section.image}
+      />
+    )),
   ]
 
   return (
