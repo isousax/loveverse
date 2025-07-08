@@ -47,7 +47,7 @@ export default function App() {
   const [activeIndex, setActiveIndex] = useState(0)
   const sectionsRef = useRef([])
 
-  const startDate = new Date(2025, 6, 4)
+  const startDate = new Date(2025, 6, 4) //4 de julho
 
   useEffect(() => {
     if (showIntro) return

@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import { intervalToDuration, differenceInDays } from 'date-fns'
 import Bolha from '../assets/bolha.svg'
 
 function calcularTempo(startDate) {
   const agora = new Date()
-  const diff = agora - startDate
+  const duration = intervalToDuration({ start: startDate, end: agora })
+  const dias = differenceInDays(agora, startDate)
 
-  const segundos = Math.floor(diff / 1000) % 60
-  const minutos = Math.floor(diff / (1000 * 60)) % 60
-  const horas = Math.floor(diff / (1000 * 60 * 60)) % 24
-  const dias = Math.floor(diff / (1000 * 60 * 60 * 24))
-  const anos = Math.floor(dias / 365.25)
+  const segundos = agora.getSeconds()
+  const minutos = agora.getMinutes()
+  const horas = agora.getHours()
+  const anos = duration.years || 0
 
   return { dias, horas, minutos, segundos, anos }
 }
@@ -67,7 +68,6 @@ export default function Hero({ startDate }) {
 
   const bolhas = isMobile ? bolhasMobile : bolhasDesktop
 
-  // Container com staggerChildren para animação sequencial vertical
   const containerVariants = {
     hidden: {},
     visible: {
@@ -77,19 +77,18 @@ export default function Hero({ startDate }) {
     },
   }
 
-  // Variante para cada item tipo "balão surgindo de cima pra baixo"
   const itemVariants = {
-  hidden: { opacity: 0, y: -10, scale: 0.9 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.8,
-      ease: 'easeOut',
+    hidden: { opacity: 0, y: -10, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.8,
+        ease: 'easeOut',
+      },
     },
-  },
-}
+  }
 
   return (
     <section
@@ -99,7 +98,6 @@ export default function Hero({ startDate }) {
           'linear-gradient(135deg, rgb(99, 102, 241), rgb(236, 72, 153))',
       }}
     >
-      {/* Bolhas animadas */}
       {bolhas.map((b, i) => (
         <img
           key={i}
@@ -141,7 +139,6 @@ export default function Hero({ startDate }) {
           className="relative w-48 h-48 md:w-64 md:h-64 mb-10"
           variants={itemVariants}
         >
-          {/* Sol */}
           <div
             className="absolute top-1/2 left-1/2 rounded-full bg-yellow-400"
             style={{
@@ -153,7 +150,6 @@ export default function Hero({ startDate }) {
                 '0 0 25px 10px rgba(255, 223, 0, 0.7), inset 0 0 15px 5px rgba(255, 244, 174, 0.8)',
             }}
           />
-          {/* Órbita */}
           <div
             className="absolute top-1/2 left-1/2 rounded-full border border-white/25"
             style={{
@@ -163,7 +159,6 @@ export default function Hero({ startDate }) {
               animation: 'orbitRotate 25s linear infinite',
             }}
           >
-            {/* Terra */}
             <div
               className="rounded-full"
               style={{
@@ -187,14 +182,14 @@ export default function Hero({ startDate }) {
           className="grid grid-cols-4 gap-6"
           variants={containerVariants}
         >
-          {['dias', 'horas', 'minutos', 'segundos'].map((label, i) => (
+          {['dias', 'horas', 'minutos', 'segundos'].map((label) => (
             <motion.div
               className="flex flex-col items-center"
               key={label}
               variants={itemVariants}
             >
               <span className="text-3xl md:text-5xl font-bold text-white">
-                {Object.values(tempo)[i]}
+                {tempo[label]}
               </span>
               <span className="text-sm md:text-lg text-purple-200 mt-1">
                 {label}

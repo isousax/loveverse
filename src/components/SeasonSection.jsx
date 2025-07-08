@@ -101,7 +101,7 @@ export default function SeasonSection({ startDate }) {
           maxMobile={7}
           maxDesktop={15}
           opacity="opacity-30"
-          animationClass="animate-float-slow"
+          animationClass="animate-fall-slow"
         />
       )}
       {season.name === 'inverno' && (
@@ -120,6 +120,16 @@ export default function SeasonSection({ startDate }) {
           colorClass="text-pink-400"
           maxMobile={10}
           maxDesktop={20}
+          opacity="opacity-40"
+          animationClass="animate-fall-slower"
+        />
+      )}
+      {season.name === 'verão' && (
+        <FallingEmojis
+          emoji="☀️"
+          colorClass="text-yellow-300"
+          maxMobile={5}
+          maxDesktop={12}
           opacity="opacity-40"
           animationClass="animate-fall-slower"
         />
