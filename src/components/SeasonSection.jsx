@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import FallingEmojis from './FallingEmojis' // ajuste o caminho conforme seu projeto
+import FallingEmojis from './FallingEmojis'
 
 const seasons = [
   { name: 'verão', emoji: '☀️' },

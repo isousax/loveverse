@@ -32,7 +32,7 @@ export default function Intro({ onFinish, startDate }) {
     }
   }, [index, onFinish])
 
-  // ⬇️ Listener de duplo clique
+  // Listener de duplo clique
   useEffect(() => {
     const handleDoubleClick = () => {
       if (onFinish) onFinish()

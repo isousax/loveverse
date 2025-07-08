@@ -92,8 +92,8 @@ export default function MoonSection({ startDate }) {
           <div
             className="absolute rounded-full z-0"
             style={{
-              width: '200px',
-              height: '200px',
+              width: '170px',
+              height: '170px',
               background: 'radial-gradient(circle, rgba(255,255,180,0.35) 0%, transparent 70%)',
               filter: 'blur(40px)',
               animation: 'pulseGlow 5s ease-in-out infinite',

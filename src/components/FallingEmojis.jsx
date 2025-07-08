@@ -4,7 +4,6 @@ export default function FallingEmojis({ emoji, colorClass, maxMobile = 10, maxDe
   const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false
   const count = isMobile ? maxMobile : maxDesktop
 
-  // Gerar array para mapear
   const emojis = Array.from({ length: count })
 
   return (
