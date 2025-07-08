@@ -10,20 +10,22 @@ import Signo from './components/Signo'
 
 function ScrollHintIndicator({ onClick }) {
   return (
-    <div className="fixed inset-x-0 bottom-4 flex justify-center pointer-events-none z-50">
-      <motion.div
+    <motion.div
+      key="scroll-hint"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      transition={{ duration: 0.5 }}
+      className="fixed inset-x-0 bottom-4 flex justify-center pointer-events-none z-50"
+    >
+      <div
         onClick={onClick}
         role="button"
         tabIndex={0}
         aria-label="Ir para próxima seção"
-        className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center cursor-pointer shadow-md pointer-events-auto"
-        initial={{ y: 0 }}
-        animate={{ y: [0, -10, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        className="w-9 h-9 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center cursor-pointer shadow-md pointer-events-auto"
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            onClick()
-          }
+          if (e.key === 'Enter' || e.key === ' ') onClick()
         }}
       >
         <svg
@@ -38,24 +40,35 @@ function ScrollHintIndicator({ onClick }) {
         >
           <path d="M7 10l5 5 5-5" />
         </svg>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   )
 }
 
 export default function App() {
   const [showIntro, setShowIntro] = useState(true)
   const [activeIndex, setActiveIndex] = useState(0)
+  const [showScrollHint, setShowScrollHint] = useState(true)
   const sectionsRef = useRef([])
 
-  const startDate = new Date(2025, 6, 4) //4 de julho
+  const startDate = new Date(2025, 6, 4) // 4 de julho
 
+  // Atualiza o botão com base na largura da tela e seção ativa
+  useEffect(() => {
+    const isMobile = window.innerWidth <= 768
+    if (isMobile && activeIndex >= 4) {
+      setShowScrollHint(false)
+    } else {
+      setShowScrollHint(true)
+    }
+  }, [activeIndex])
+
+  // Atualiza índice ao rolar
   useEffect(() => {
     if (showIntro) return
 
     const handleScroll = () => {
       const center = window.scrollY + window.innerHeight / 2
-
       let closestIndex = 0
       let minDistance = Infinity
 
@@ -79,6 +92,7 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [showIntro])
 
+  // Scroll manual
   const goToSection = (index) => {
     sectionsRef.current[index]?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -88,8 +102,30 @@ export default function App() {
     goToSection(nextIndex)
   }
 
+  // Swipe Mobile
+  const touchStartY = useRef(null)
+
+  const handleTouchStart = (e) => {
+    touchStartY.current = e.touches[0].clientY
+  }
+
+  const handleTouchEnd = (e) => {
+    if (touchStartY.current === null) return
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current
+
+    if (Math.abs(deltaY) > 50) {
+      if (deltaY > 0 && activeIndex > 0) {
+        goToSection(activeIndex - 1)
+      } else if (deltaY < 0 && activeIndex < sectionsRef.current.length - 1) {
+        goToSection(activeIndex + 1)
+      }
+    }
+
+    touchStartY.current = null
+  }
+
   const sections = [
-    <Hero key="hero" startDate={startDate}/>,
+    <Hero key="hero" startDate={startDate} />,
     <MusicSection key="music" />,
     <SeasonSection key="season" startDate={startDate} />,
     <MoonSection key="moon" startDate={startDate} />,
@@ -99,6 +135,7 @@ export default function App() {
   return (
     <>
       <StarBackground />
+
       <AnimatePresence mode="wait">
         {showIntro ? (
           <motion.div
@@ -113,11 +150,8 @@ export default function App() {
           </motion.div>
         ) : (
           <>
-            {/* Indicador lateral de seções */}
-            <div
-              className="section-indicator fixed right-8 top-1/2 transform -translate-y-1/2 flex flex-col gap-3 z-50"
-              aria-label="Navegação das seções"
-            >
+            {/* Indicador lateral */}
+            <div className="section-indicator fixed right-8 top-1/2 transform -translate-y-1/2 flex flex-col gap-3 z-50">
               {sections.map((_, i) => (
                 <div
                   key={i}
@@ -128,7 +162,7 @@ export default function App() {
               ))}
             </div>
 
-            {/* Seções scrolláveis */}
+            {/* Seções com swipe */}
             <motion.div
               key="sections"
               initial={{ opacity: 0 }}
@@ -136,6 +170,8 @@ export default function App() {
               exit={{ opacity: 0 }}
               transition={{ duration: 1 }}
               className="snap-y snap-mandatory scroll-smooth"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
             >
               {sections.map((section, i) => (
                 <section
@@ -148,8 +184,12 @@ export default function App() {
               ))}
             </motion.div>
 
-            {/* Botão central inferior com seta */}
-            <ScrollHintIndicator onClick={handleScrollHintClick} />
+            {/* Botão inferior com fade animado */}
+            <AnimatePresence>
+              {showScrollHint && (
+                <ScrollHintIndicator onClick={handleScrollHintClick} />
+              )}
+            </AnimatePresence>
           </>
         )}
       </AnimatePresence>

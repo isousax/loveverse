@@ -92,7 +92,7 @@ export default function Hero({ startDate }) {
 
   return (
     <section
-      className="hero-section flex items-center justify-center text-white text-center px-6 relative snap-start snap-always min-h-screen overflow-hidden pb-24 md:pb-0"
+      className="hero-section flex items-center justify-center text-white text-center px-6 relative snap-start snap-always min-h-screen overflow-hidden pb-16 md:pb-0"
       style={{
         background:
           'linear-gradient(135deg, rgb(99, 102, 241), rgb(236, 72, 153))',

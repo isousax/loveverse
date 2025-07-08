@@ -1,17 +1,14 @@
 export default function MusicSection() {
     return (
         <section
-            className="h-screen flex items-center justify-center relative overflow-hidden snap-start snap-always pb-24 md:pb-0"
+            className="h-screen flex items-center justify-center relative overflow-hidden snap-start snap-always pb-20 md:pb-0"
             style={{ background: 'rgb(18, 18, 18)', boxShadow: 'rgba(0, 0, 0, 0.7) 0px 0px 150px inset' }}
         >
             <div className="overflow-hidden container mx-auto px-4 relative z-10">
                 <div className="text-center max-w-4xl mx-auto opacity-100 transform-none">
                     <h2 className="mb-8 flex items-center justify-center">
                         <span
-                            className="w-[90%] text-3xl md:text-6xl
-                                text-transparent font-bold
-                                bg-gradient-to-r from-pink-500 via-purple-600 to-pink-500
-                                bg-clip-text"
+                            className="w-[90%] text-3xl md:text-6xl text-transparent font-bold bg-gradient-to-r from-pink-500 via-purple-600 to-pink-500 bg-clip-text"
                         >
                             Que tal dar play na música que me faz reviver nossa história?
                         </span>
@@ -30,7 +27,7 @@ export default function MusicSection() {
                                 title="Música que revive nossa história"
                             />
                             <p className="text-white/80 text-lg mt-4 italic opacity-100">
-                                Dê play na música e continue rolando para reviver nossos momentos especiais...
+                                Dê play na música e continue rolando...
                             </p>
                         </div>
                     </div>
