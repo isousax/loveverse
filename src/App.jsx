@@ -9,6 +9,7 @@ import MoonSection from './components/MoonSection'
 import Signo from './components/Signo'
 import { photoSections } from './data/photoSections'
 import PhotoSection from './components/PhotoSection'
+import FinalSection from './components/FinalSection'
 
 function ScrollHintIndicator({ onClick }) {
   return (
@@ -141,6 +142,7 @@ export default function App() {
         image={section.image}
       />
     )),
+    <FinalSection key="final" startDate={startDate} />,
   ]
 
   return (

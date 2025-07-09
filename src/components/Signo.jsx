@@ -52,11 +52,11 @@ export default function Signo({ startDate }) {
   const handleClick = () => {
     if (revelado || explodindo) return
 
-    setIsInflating(true) // dispara a animação
+    setIsInflating(true)
 
     setTimeout(() => {
       setIsInflating(false)
-    }, 300) // duração da animação inflar
+    }, 300)
 
     const novoCliques = cliques + 1
     setCliques(novoCliques)
@@ -145,7 +145,7 @@ export default function Signo({ startDate }) {
             </motion.div>
 
             <span className="text-xl md:text-3xl font-semibold">
-              Clique <strong>{CLIQUES_NECESSARIOS} vezes</strong> para revelar o signo do casal
+              Clique <strong>{CLIQUES_NECESSARIOS} vezes</strong> para revelar nosso signo
             </span>
           </motion.div>
         )}

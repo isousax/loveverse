@@ -35,7 +35,7 @@ export default function PhotoSection({ image, chapter, title, description }) {
           </div>
 
           <div className="flex-1 overflow-hidden align-top">
-            <p className="text-[0.75rem] md:text-sm leading-snug text-center">
+            <p className="text-[0.85rem] md:text-sm leading-snug text-center">
               {description}
             </p>
           </div>
