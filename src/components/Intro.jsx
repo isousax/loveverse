@@ -1,53 +1,42 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAppContext } from '../context/AppContext'
 
-function formatarData(data) {
-  const dia = String(data.getDate()).padStart(2, '0')
-  const mes = data.toLocaleString('pt-BR', { month: 'long' })
-  const ano = data.getFullYear()
-  return `${dia} de ${mes} de ${ano}`
+const formatDate = (date) => {
+  if (!(date instanceof Date)) return ''
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = date.toLocaleString('pt-BR', { month: 'long' })
+  const year = date.getFullYear()
+  return `${day} de ${month} de ${year}`
 }
 
-const phrases = [
-  'Alguns encontros mudam nossas vidas para sempre...',
-  'Cada momento ao seu lado é uma memória eterna...',
-  'Nossa história é feita de pequenos instantes mágicos...',
-  'Vamos reviver nossa jornada...',
-]
-
-export default function Intro({ onFinish, startDate }) {
+export default function Intro({ onFinish, introPhraseData }) {
+  const { startDate } = useAppContext()
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
-    if (index < phrases.length - 1) {
-      const timer = setTimeout(() => {
-        setIndex((prev) => prev + 1)
-      }, 5000)
+    if (index < introPhraseData.length - 1) {
+      const timer = setTimeout(() => setIndex((i) => i + 1), 5000)
       return () => clearTimeout(timer)
     } else {
-      const finishTimer = setTimeout(() => {
-        if (onFinish) onFinish()
-      }, 5000)
+      const finishTimer = setTimeout(() => onFinish?.(), 5000)
       return () => clearTimeout(finishTimer)
     }
-  }, [index, onFinish])
+  }, [index, onFinish, introPhraseData])
 
-  // Listener de duplo clique
   useEffect(() => {
-    const handleDoubleClick = () => {
-      if (onFinish) onFinish()
-    }
-
-    window.addEventListener('dblclick', handleDoubleClick)
-    return () => window.removeEventListener('dblclick', handleDoubleClick)
+    const onDoubleClick = () => onFinish?.()
+    window.addEventListener('dblclick', onDoubleClick)
+    return () => window.removeEventListener('dblclick', onDoubleClick)
   }, [onFinish])
 
   return (
-    <div
-      className="flex flex-col items-center justify-center min-h-[100dvh] px-6 text-center overflow-visible"
+    <section
+      aria-live="polite"
+      className="flex flex-col items-center justify-center min-h-screen px-6 text-center"
       style={{ fontFamily: "'Poppins', sans-serif" }}
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={index}
           initial={{ opacity: 0, y: 30, filter: 'blur(6px)' }}
@@ -57,21 +46,22 @@ export default function Intro({ onFinish, startDate }) {
           className="w-full max-w-[90vw] px-4"
         >
           {index === 0 && (
-            <p className="text-gray-300 text-lg md:text-2xl font-light mb-3 leading-relaxed font-comicRelief">
-              {formatarData(startDate)}
+            <p
+              className="mb-3 text-lg md:text-2xl font-light text-gray-300 font-comicRelief leading-relaxed"
+              aria-label={`Data de início: ${formatDate(startDate)}`}
+            >
+              {formatDate(startDate)}
             </p>
           )}
           <p
-            className="text-transparent text-3xl md:text-6xl font-bold
-              bg-gradient-to-r from-pink-500 via-purple-600 to-pink-500
-              bg-clip-text font-comicRelief
-              whitespace-normal break-words leading-[1.4]"
+            className="whitespace-normal break-words text-3xl font-bold leading-[1.4] md:text-6xl
+            bg-gradient-to-r from-pink-500 via-purple-600 to-pink-500 bg-clip-text text-transparent font-comicRelief"
             style={{ paddingBottom: '0.25em' }}
           >
-            {phrases[index]}
+            {introPhraseData[index]}
           </p>
         </motion.div>
       </AnimatePresence>
-    </div>
+    </section>
   )
 }

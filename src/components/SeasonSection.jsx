@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import FallingEmojis from './FallingEmojis'
+import { useAppContext } from '../context/AppContext'
 
 const seasons = [
   { name: 'verão', emoji: '☀️' },
@@ -24,19 +25,31 @@ function getSeason(date) {
   return seasons[3] // primavera
 }
 
-export default function SeasonSection({ startDate }) {
+function getSeasonDescription(seasonName) {
+  switch (seasonName) {
+    case 'verão':
+      return 'Sob o calor do sol e dias longos, nossa história começou em um momento perfeito.'
+    case 'outono':
+      return 'Entre folhas caídas e o vento suave, nossa história ganhou um tom aconchegante.'
+    case 'inverno':
+      return 'Com o frio no ar, nossa história aqueceu nossos corações na estação mais fria.'
+    case 'primavera':
+      return 'Floresceram nossos sentimentos na estação das flores e renovações.'
+    default:
+      return ''
+  }
+}
+
+export default function SeasonSection() {
+  const { startDate } = useAppContext()
   const season = useMemo(() => getSeason(startDate), [startDate])
+  const description = useMemo(() => getSeasonDescription(season.name), [season.name])
 
   return (
     <section
-      className="min-h-[100dvh] flex items-center justify-center relative overflow-hidden snap-start snap-always"
-      style={{
-        background: 'rgb(18, 18, 18)',
-        boxShadow: 'rgba(0, 0, 0, 0.7) 0px 0px 150px inset',
-      }}
+      className="min-h-[100dvh] flex items-center justify-center relative overflow-hidden snap-start snap-always bg-[rgb(18,18,18)] shadow-[inset_0_0_150px_rgba(0,0,0,0.7)]"
       aria-label="Estação do Ano em que o namoro começou"
     >
-      {/* Estilos de animação float do emoji */}
       <style>{`
         @keyframes float {
           0%, 100% {
@@ -54,10 +67,10 @@ export default function SeasonSection({ startDate }) {
         }
       `}</style>
 
-      <div className="overflow-hidden container mx-auto px-4 flex items-center justify-center">
-        <div className="text-center max-w-4xl" style={{ opacity: 1, transform: 'none' }}>
-          <h2 className="text-4xl md:text-5xl font-bold mb-8 text-white">
-            <span className="block text-2xl md:text-3xl mb-4 opacity-80">
+      <div className="container mx-auto px-4 flex items-center justify-center overflow-hidden">
+        <div className="max-w-4xl text-center opacity-100 transform-none">
+          <h2 className="mb-8 text-white text-4xl md:text-5xl font-bold">
+            <span className="block mb-4 text-2xl md:text-3xl opacity-80">
               Nossa história começou no
             </span>
             <div className="flex items-center justify-center gap-4">
@@ -74,21 +87,8 @@ export default function SeasonSection({ startDate }) {
               </span>
             </div>
           </h2>
-          <p className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed">
-            {(() => {
-              switch (season.name) {
-                case 'verão':
-                  return 'Sob o calor do sol e dias longos, nossa história começou em um momento perfeito.'
-                case 'outono':
-                  return 'Entre folhas caídas e o vento suave, nossa história ganhou um tom aconchegante.'
-                case 'inverno':
-                  return 'Com o frio no ar, nossa história aqueceu nossos corações na estação mais fria.'
-                case 'primavera':
-                  return 'Floresceram nossos sentimentos na estação das flores e renovações.'
-                default:
-                  return ''
-              }
-            })()}
+          <p className="mx-auto max-w-2xl leading-relaxed text-xl md:text-2xl text-white/80">
+            {description}
           </p>
         </div>
       </div>

@@ -8,8 +8,11 @@ import SeasonSection from './components/SeasonSection'
 import MoonSection from './components/MoonSection'
 import Signo from './components/Signo'
 import { photoSections } from './data/photoSections'
+import { musicData } from './data/musicData'
+import { introPhraseData } from './data/introPhraseData'
 import PhotoSection from './components/PhotoSection'
 import FinalSection from './components/FinalSection'
+import { useAppContext } from './context/AppContext'
 
 function ScrollHintIndicator({ onClick }) {
   return (
@@ -49,24 +52,21 @@ function ScrollHintIndicator({ onClick }) {
 }
 
 export default function App() {
+  const { startDate } = useAppContext()
   const [showIntro, setShowIntro] = useState(true)
   const [activeIndex, setActiveIndex] = useState(0)
   const [showScrollHint, setShowScrollHint] = useState(true)
   const sectionsRef = useRef([])
 
-  const startDate = new Date(2025, 6, 4) // 4 de julho
-
-  // Atualiza o botão com base na largura da tela e seção ativa
   useEffect(() => {
     const isMobile = window.innerWidth <= 768
-    if (isMobile && activeIndex >= 4) {
+    if (isMobile && activeIndex >= 4 && activeIndex < sectionsRef.current.length - 1) {
       setShowScrollHint(false)
     } else {
       setShowScrollHint(true)
     }
   }, [activeIndex])
 
-  // Atualiza índice ao rolar
   useEffect(() => {
     if (showIntro) return
 
@@ -95,17 +95,18 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [showIntro])
 
-  // Scroll manual
   const goToSection = (index) => {
     sectionsRef.current[index]?.scrollIntoView({ behavior: 'smooth' })
   }
 
   const handleScrollHintClick = () => {
-    const nextIndex = (activeIndex + 1) % sectionsRef.current.length
-    goToSection(nextIndex)
+    if (activeIndex === sectionsRef.current.length - 1) {
+      goToSection(0)
+    } else {
+      goToSection(activeIndex + 1)
+    }
   }
 
-  // Swipe Mobile
   const touchStartY = useRef(null)
 
   const handleTouchStart = (e) => {
@@ -128,11 +129,11 @@ export default function App() {
   }
 
   const sections = [
-    <Hero key="hero" startDate={startDate} />,
-    <MusicSection key="music" />,
-    <SeasonSection key="season" startDate={startDate} />,
-    <MoonSection key="moon" startDate={startDate} />,
-    <Signo key="signo" startDate={startDate} />,
+    <Hero key="hero" />,
+    <MusicSection key="music" music={musicData} />,
+    <SeasonSection key="season" />,
+    <MoonSection key="moon" />,
+    <Signo key="signo" />,
     ...photoSections.map((section, i) => (
       <PhotoSection
         key={`photo-${i}`}
@@ -142,7 +143,7 @@ export default function App() {
         image={section.image}
       />
     )),
-    <FinalSection key="final" startDate={startDate} />,
+    <FinalSection key="final" />,
   ]
 
   return (
@@ -159,7 +160,7 @@ export default function App() {
             transition={{ duration: 1 }}
             className="h-screen flex items-center justify-center"
           >
-            <Intro onFinish={() => setShowIntro(false)} startDate={startDate} />
+            <Intro onFinish={() => setShowIntro(false)} introPhraseData={introPhraseData} />
           </motion.div>
         ) : (
           <>

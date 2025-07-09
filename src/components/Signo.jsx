@@ -1,10 +1,16 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { SIGNOS } from '../utils/signos'
+import { useAppContext } from '../context/AppContext'
+
+const CLIQUES_NECESSARIOS = 5
+const PARTICULAS_COUNT = 30
+const LUZES_COUNT = 60
+const ESTRELAS_COUNT = 60
 
 function descobrirSigno(date) {
   const dia = date.getDate()
-  const mes = date.getMonth() + 1 // JS: Janeiro = 0
+  const mes = date.getMonth() + 1 // Janeiro = 0 no JS
 
   return (
     SIGNOS.find((s) => {
@@ -29,16 +35,19 @@ function descobrirSigno(date) {
   )
 }
 
-export default function Signo({ startDate }) {
+export default function Signo() {
+  const { startDate } = useAppContext()
   const signo = useMemo(() => descobrirSigno(startDate), [startDate])
+
   const [cliques, setCliques] = useState(0)
   const [revelado, setRevelado] = useState(false)
   const [explodindo, setExplodindo] = useState(false)
   const [mostrarConteudoFinal, setMostrarConteudoFinal] = useState(false)
   const [isInflating, setIsInflating] = useState(false)
 
+  // Estrelas de fundo
   const estrelas = useMemo(() => {
-    return Array.from({ length: 60 }).map(() => ({
+    return Array.from({ length: ESTRELAS_COUNT }).map(() => ({
       top: `${Math.random() * 100}%`,
       left: `${Math.random() * 100}%`,
       width: `${1 + Math.random() * 3}px`,
@@ -48,32 +57,39 @@ export default function Signo({ startDate }) {
     }))
   }, [])
 
-  const CLIQUES_NECESSARIOS = 5
+  // Handler do clique com debounce para animação de inflar
   const handleClick = () => {
     if (revelado || explodindo) return
+    if (isInflating) return
 
     setIsInflating(true)
-
-    setTimeout(() => {
-      setIsInflating(false)
-    }, 300)
-
-    const novoCliques = cliques + 1
-    setCliques(novoCliques)
-
-    if (novoCliques >= CLIQUES_NECESSARIOS) {
-      setExplodindo(true)
-
-      setTimeout(() => {
-        setRevelado(true)
-        setExplodindo(false)
-        setMostrarConteudoFinal(true)
-      }, 2800)
-    }
+    setCliques((prev) => {
+      const next = prev + 1
+      if (next >= CLIQUES_NECESSARIOS) {
+        setExplodindo(true)
+        setTimeout(() => {
+          setRevelado(true)
+          setExplodindo(false)
+          setMostrarConteudoFinal(true)
+        }, 2800)
+      }
+      return next
+    })
   }
 
+  // Resetar inflar após 300ms
+  useEffect(() => {
+    if (!isInflating) return
+    const timer = setTimeout(() => setIsInflating(false), 300)
+    return () => clearTimeout(timer)
+  }, [isInflating])
+
   return (
-    <section className="min-h-[100dvh] flex items-center justify-center relative overflow-hidden snap-start px-4 bg-[#121212] shadow-[inset_0_0_150px_rgba(0,0,0,0.7)] select-none pb-10 md:pb-0">
+    <section
+      className="min-h-[100dvh] flex items-center justify-center relative overflow-hidden snap-start px-4 bg-[#121212] shadow-[inset_0_0_150px_rgba(0,0,0,0.7)] select-none pb-10 md:pb-0"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {/* Fundo com estrelas */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0%,transparent_100%)]" />
@@ -89,6 +105,7 @@ export default function Signo({ startDate }) {
               opacity: star.opacity,
               animation: `twinkle ${star.duration} ease-in-out infinite`,
             }}
+            aria-hidden="true"
           />
         ))}
       </div>
@@ -109,13 +126,14 @@ export default function Signo({ startDate }) {
               transition={{ duration: 0.3, ease: 'easeInOut' }}
               className="relative flex items-center justify-center rounded-full cursor-pointer"
               style={{
-                width: '150px',
-                height: '150px',
+                width: 150,
+                height: 150,
                 background: 'radial-gradient(circle at center, #a16ee8, #5c3ea1)',
-                boxShadow: '0 0 30px 10px rgba(161,110,232,0.7), inset 0 0 20px 5px rgba(92,62,161,0.9)',
+                boxShadow:
+                  '0 0 30px 10px rgba(161,110,232,0.7), inset 0 0 20px 5px rgba(92,62,161,0.9)',
               }}
               role="button"
-              aria-label="Clique para revelar o signo"
+              aria-label={`Clique para revelar o signo, clique ${cliques} de ${CLIQUES_NECESSARIOS}`}
               tabIndex={0}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') handleClick()
@@ -132,8 +150,8 @@ export default function Signo({ startDate }) {
                   ease: 'easeInOut',
                 }}
                 style={{
-                  fontSize: '96px',
-                  fontWeight: '900',
+                  fontSize: 96,
+                  fontWeight: 900,
                   color: '#cbbcff',
                   textShadow:
                     '0 0 10px #b492ff, 0 0 20px #a370ff, 0 0 30px #8f5de8, 0 0 40px #b492ff',
@@ -155,8 +173,8 @@ export default function Signo({ startDate }) {
           <>
             {/* Partículas dos emojis do signo */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
-              {Array.from({ length: 30 }).map((_, i) => {
-                const angle = (i / 30) * 2 * Math.PI
+              {Array.from({ length: PARTICULAS_COUNT }).map((_, i) => {
+                const angle = (i / PARTICULAS_COUNT) * 2 * Math.PI
                 const radius = 150 + Math.random() * 150
                 const x = Math.cos(angle) * radius
                 const y = Math.sin(angle) * radius
@@ -175,6 +193,7 @@ export default function Signo({ startDate }) {
                       textShadow:
                         '0 0 15px #c2a1ff, 0 0 40px #a370ff, 0 0 70px #7c48ff',
                     }}
+                    aria-hidden="true"
                   >
                     {signo.emoji}
                   </motion.span>
@@ -184,8 +203,8 @@ export default function Signo({ startDate }) {
 
             {/* Partículas pequenas de luz */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
-              {Array.from({ length: 60 }).map((_, i) => {
-                const angle = (i / 60) * 2 * Math.PI
+              {Array.from({ length: LUZES_COUNT }).map((_, i) => {
+                const angle = (i / LUZES_COUNT) * 2 * Math.PI
                 const radius = 120 + Math.random() * 200
                 const x = Math.cos(angle) * radius * (0.7 + Math.random() * 0.6)
                 const y = Math.sin(angle) * radius * (0.7 + Math.random() * 0.6)
@@ -209,6 +228,7 @@ export default function Signo({ startDate }) {
                       opacity,
                       boxShadow: '0 0 10px 5px #a577ff',
                     }}
+                    aria-hidden="true"
                   />
                 )
               })}
@@ -227,16 +247,27 @@ export default function Signo({ startDate }) {
               O nosso signo é
             </span>
             <div className="flex items-center justify-center gap-4 mb-8">
-              <h2 className="text-[8vw] lg:text-7xl font-bold bg-gradient-to-r from-pink-500 via-purple-600 to-pink-500 bg-clip-text text-transparent">
-                {signo.nome}
-              </h2>
-              <span className="text-[8vw] lg:text-7xl text-white">{signo.emoji}</span>
+              <div className="relative leading-none">
+                <h2
+                  className="text-[8vw] lg:text-7xl font-bold bg-gradient-to-r from-pink-500 via-purple-600 to-pink-500 bg-clip-text text-transparent"
+                  style={{
+                    lineHeight: 1,
+                    paddingBottom: '0.2em',
+                    paddingTop: '0.1em',
+                    WebkitTextStroke: '0.3px transparent',
+                    overflowWrap: 'normal',
+                  }}
+                >
+                  {signo.nome}
+                </h2>
+              </div>
+              <span className="text-[8vw] lg:text-7xl text-white leading-none">{signo.emoji}</span>
             </div>
 
             <div className="relative w-48 h-48 md:w-64 md:h-64 my-4 mx-auto">
-              <div className="absolute inset-0 rounded-full border-2 border-white/20 animate-spin-slow"></div>
-              <div className="absolute inset-4 rounded-full border border-white/10"></div>
-              <div className="absolute inset-8 rounded-full border border-white/5"></div>
+              <div className="absolute inset-0 rounded-full border-2 border-white/20 animate-spin-slow" />
+              <div className="absolute inset-4 rounded-full border border-white/10" />
+              <div className="absolute inset-8 rounded-full border border-white/5" />
               <div
                 className="absolute inset-0 flex items-center justify-center text-7xl md:text-8xl text-white"
                 style={{ textShadow: '0 0 30px rgba(255,255,255,0.5)' }}

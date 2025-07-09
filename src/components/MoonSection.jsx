@@ -1,54 +1,69 @@
 import { useState, useEffect } from 'react'
 import { Moon } from 'lunarphase-js'
+import { useAppContext } from '../context/AppContext'
 
-export default function MoonSection({ startDate }) {
+function getMoonPhaseInfo(date) {
+  const rawName = Moon.lunarPhase(date).toLowerCase()
+  const emoji = Moon.lunarPhaseEmoji(date, { hemisphere: 'SOUTHERN' })
+
+  if (rawName.includes('new')) {
+    return {
+      name: 'Nova',
+      label: 'lua nova',
+      emoji: '🌑',
+      text: 'A lua nova selava o início da nossa história com mistério e promessas.',
+    }
+  }
+  if (rawName.includes('waxing') || rawName === 'first quarter') {
+    return {
+      name: 'Crescente',
+      label: 'lua crescente',
+      emoji: '🌒',
+      text: 'A lua crescente iluminava o início da nossa história.',
+    }
+  }
+  if (rawName.includes('full')) {
+    return {
+      name: 'Cheia',
+      label: 'lua cheia',
+      emoji: '🌕',
+      text: 'A lua cheia encheu nossas noites de brilho e paixão.',
+    }
+  }
+  if (rawName.includes('waning') || rawName === 'last quarter') {
+    return {
+      name: 'Minguante',
+      label: 'lua minguante',
+      emoji: '🌘',
+      text: 'A lua minguante trazia calma e reflexão para nós.',
+    }
+  }
+  return {
+    name: 'Desconhecida',
+    label: rawName,
+    emoji,
+    text: 'A lua brilhava de forma única naquela noite especial.',
+  }
+}
+
+export default function MoonSection() {
+  const { startDate } = useAppContext()
   const [phase, setPhase] = useState({ name: '', label: '', emoji: '', text: '' })
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    const rawName = Moon.lunarPhase(startDate).toLowerCase()
-    const emoji = Moon.lunarPhaseEmoji(startDate, { hemisphere: 'SOUTHERN' })
-
-    const simplified = (() => {
-      if (rawName.includes('new')) {
-        return {
-          name: 'Nova',
-          label: 'lua nova',
-          emoji: '🌑',
-          text: 'A lua nova selava o início da nossa história com mistério e promessas.',
-        }
-      } else if (rawName.includes('waxing') || rawName === 'first quarter') {
-        return {
-          name: 'Crescente',
-          label: 'lua crescente',
-          emoji: '🌒',
-          text: 'A lua crescente iluminava o início da nossa história.',
-        }
-      } else if (rawName.includes('full')) {
-        return {
-          name: 'Cheia',
-          label: 'lua cheia',
-          emoji: '🌕',
-          text: 'A lua cheia encheu nossas noites de brilho e paixão.',
-        }
-      } else if (rawName.includes('waning') || rawName === 'last quarter') {
-        return {
-          name: 'Minguante',
-          label: 'lua minguante',
-          emoji: '🌘',
-          text: 'A lua minguante trazia calma e reflexão para nós.',
-        }
-      } else {
-        return {
-          name: 'Desconhecida',
-          label: rawName,
-          emoji,
-          text: 'A lua brilhava de forma única naquela noite especial.',
-        }
-      }
-    })()
-
-    setPhase(simplified)
+    setPhase(getMoonPhaseInfo(startDate))
   }, [startDate])
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    handleResize() // set initial value
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const starCount = isMobile ? 15 : 35
+  const stars = Array.from({ length: starCount })
 
   return (
     <section
@@ -57,9 +72,10 @@ export default function MoonSection({ startDate }) {
         background: 'rgb(18, 18, 18)',
         boxShadow: 'rgba(0, 0, 0, 0.7) 0px 0px 150px inset',
       }}
+      aria-label="Seção mostrando a fase lunar da data de início do relacionamento"
     >
       {/* Brilhos adaptativos */}
-      {[...Array(typeof window !== 'undefined' && window.innerWidth < 768 ? 15 : 35)].map((_, i) => (
+      {stars.map((_, i) => (
         <span
           key={i}
           className="absolute rounded-full bg-yellow-300 opacity-80"
@@ -72,6 +88,7 @@ export default function MoonSection({ startDate }) {
             animationDelay: `${Math.random() * 4}s`,
             boxShadow: '0 0 4px 1px rgba(255, 234, 138, 0.6)',
           }}
+          aria-hidden="true"
         />
       ))}
 
@@ -81,7 +98,11 @@ export default function MoonSection({ startDate }) {
             Naquela noite, a lua estava
           </span>
           <div className="flex items-center justify-center gap-3 md:gap-4">
-            <span className="text-4xl md:text-7xl bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent">
+            <span
+              className="text-4xl md:text-7xl bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent"
+              aria-label={`Fase lunar: ${phase.label}`}
+              role="img"
+            >
               {phase.name}
             </span>
           </div>
@@ -98,6 +119,7 @@ export default function MoonSection({ startDate }) {
               filter: 'blur(40px)',
               animation: 'pulseGlow 5s ease-in-out infinite',
             }}
+            aria-hidden="true"
           />
 
           <span
@@ -106,6 +128,8 @@ export default function MoonSection({ startDate }) {
               filter: 'grayscale(1) brightness(1.2)',
               textShadow: 'rgba(255, 255, 255, 0.3) 0px 0px 60px',
             }}
+            role="img"
+            aria-label={`Emoji da lua: ${phase.label}`}
           >
             {phase.emoji}
           </span>

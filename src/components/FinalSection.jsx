@@ -1,48 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useState, useRef } from 'react'
 import FloatingHearts from './FloatingHearts'
+import useElapsedTime from '../hooks/useElapsedTime'
+import { useAppContext } from '../context/AppContext'
 
-export default function FinalSection({ startDate }) {
-  const [timePassed, setTimePassed] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  })
+export default function FinalSection() {
+  const { startDate } = useAppContext()
+  const timePassed = useElapsedTime(startDate)
 
   const [heartsTrigger, setHeartsTrigger] = useState(false)
-  const [isClicked, setIsClicked] = useState(false) // estado para efeito clique
-
-  useEffect(() => {
-    function updateTime() {
-      const now = new Date()
-      const diff = now - startDate
-      const totalSeconds = Math.floor(diff / 1000)
-      const days = Math.floor(totalSeconds / (3600 * 24))
-      const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600)
-      const minutes = Math.floor((totalSeconds % 3600) / 60)
-      const seconds = totalSeconds % 60
-
-      setTimePassed({ days, hours, minutes, seconds })
-    }
-
-    updateTime()
-    const interval = setInterval(updateTime, 1000)
-
-    return () => clearInterval(interval)
-  }, [startDate])
+  const [isClicked, setIsClicked] = useState(false)
+  const triggerTimeout = useRef(null)
 
   const handleClick = () => {
-    console.log('[FinalSection] Botão clicado')
-
-    // Efeito visual "apertar"
     setIsClicked(true)
     setTimeout(() => setIsClicked(false), 200)
 
-    // Força reset do trigger para garantir que um novo clique funcione mesmo durante o intervalo
+    if (triggerTimeout.current) clearTimeout(triggerTimeout.current)
     setHeartsTrigger(false)
-    setTimeout(() => {
-      setHeartsTrigger(true)
-    }, 10)
+    triggerTimeout.current = setTimeout(() => setHeartsTrigger(true), 10)
   }
 
   return (
@@ -118,10 +93,7 @@ export default function FinalSection({ startDate }) {
       {heartsTrigger && (
         <FloatingHearts
           trigger={heartsTrigger}
-          onComplete={() => {
-            console.log('[FinalSection] onComplete chamado')
-            setHeartsTrigger(false)
-          }}
+          onComplete={() => setHeartsTrigger(false)}
         />
       )}
     </section>
