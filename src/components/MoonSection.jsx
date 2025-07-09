@@ -52,7 +52,7 @@ export default function MoonSection({ startDate }) {
 
   return (
     <section
-      className="h-screen flex items-center justify-center relative overflow-hidden snap-start snap-always"
+      className="min-h-[100dvh] flex items-center justify-center relative overflow-hidden snap-start snap-always"
       style={{
         background: 'rgb(18, 18, 18)',
         boxShadow: 'rgba(0, 0, 0, 0.7) 0px 0px 150px inset',

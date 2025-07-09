@@ -44,7 +44,7 @@ export default function Intro({ onFinish, startDate }) {
 
   return (
     <div
-      className="flex flex-col items-center justify-center h-screen px-6 text-center overflow-visible"
+      className="flex flex-col items-center justify-center min-h-[100dvh] px-6 text-center overflow-visible"
       style={{ fontFamily: "'Poppins', sans-serif" }}
     >
       <AnimatePresence mode="wait">

@@ -46,7 +46,7 @@ export default function FinalSection({ startDate }) {
   }
 
   return (
-    <section className="final-section min-h-screen flex items-center justify-center relative overflow-hidden snap-start snap-always">
+    <section className="final-section min-h-[100dvh] flex items-center justify-center relative overflow-hidden snap-start snap-always">
       <div
         className="final-bg absolute inset-0 w-full h-full"
         style={{

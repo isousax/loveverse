@@ -73,7 +73,7 @@ export default function Signo({ startDate }) {
   }
 
   return (
-    <section className="h-screen flex items-center justify-center relative overflow-hidden snap-start px-4 bg-[#121212] shadow-[inset_0_0_150px_rgba(0,0,0,0.7)] select-none pb-10 md:pb-0">
+    <section className="min-h-[100dvh] flex items-center justify-center relative overflow-hidden snap-start px-4 bg-[#121212] shadow-[inset_0_0_150px_rgba(0,0,0,0.7)] select-none pb-10 md:pb-0">
       {/* Fundo com estrelas */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0%,transparent_100%)]" />
