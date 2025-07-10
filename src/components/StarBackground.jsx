@@ -2,16 +2,19 @@ import { useEffect, useRef } from 'react'
 
 export default function StarBackground() {
   const starsRef = useRef([])
+  const canvasRef = useRef(null)
+  const animationFrameIdRef = useRef(null)
 
   useEffect(() => {
-    const canvas = document.getElementById('starfield')
+    const canvas = canvasRef.current
+    if (!canvas) return
+
     const ctx = canvas.getContext('2d')
 
     function resizeCanvas() {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
 
-      // Gerar estrelas novamente com base no novo tamanho
       const stars = []
       for (let i = 0; i < 150; i++) {
         stars.push({
@@ -27,8 +30,7 @@ export default function StarBackground() {
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      const stars = starsRef.current
-      for (const star of stars) {
+      starsRef.current.forEach((star) => {
         ctx.beginPath()
         ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2)
         ctx.fillStyle = '#ffffff'
@@ -39,9 +41,9 @@ export default function StarBackground() {
           star.y = 0
           star.x = Math.random() * canvas.width
         }
-      }
+      })
 
-      requestAnimationFrame(draw)
+      animationFrameIdRef.current = requestAnimationFrame(draw)
     }
 
     resizeCanvas()
@@ -50,13 +52,17 @@ export default function StarBackground() {
 
     return () => {
       window.removeEventListener('resize', resizeCanvas)
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current)
+      }
     }
   }, [])
 
   return (
     <canvas
-      id="starfield"
+      ref={canvasRef}
       className="fixed top-0 left-0 w-screen min-h-[100dvh] z-[-1]"
+      style={{ display: 'block' }}
     />
   )
 }

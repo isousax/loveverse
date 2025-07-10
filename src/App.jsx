@@ -1,18 +1,20 @@
 import { useState, useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import StarBackground from './components/StarBackground'
+import SplashScreen from './components/SplashScreen'
 import Intro from './components/Intro'
 import Hero from './components/Hero'
 import MusicSection from './components/MusicSection'
 import SeasonSection from './components/SeasonSection'
 import MoonSection from './components/MoonSection'
 import Signo from './components/Signo'
+import FinalSection from './components/FinalSection'
+import PhotoSection from './components/PhotoSection'
+
+import { useIsAppReady } from './hooks/useIsAppReady'
 import { photoSections } from './data/photoSections'
 import { musicData } from './data/musicData'
 import { introPhraseData } from './data/introPhraseData'
-import PhotoSection from './components/PhotoSection'
-import FinalSection from './components/FinalSection'
-import { useAppContext } from './context/AppContext'
 
 function ScrollHintIndicator({ onClick }) {
   return (
@@ -52,7 +54,7 @@ function ScrollHintIndicator({ onClick }) {
 }
 
 export default function App() {
-  const { startDate } = useAppContext()
+  const isAppReady = useIsAppReady()
   const [showIntro, setShowIntro] = useState(true)
   const [activeIndex, setActiveIndex] = useState(0)
   const [showScrollHint, setShowScrollHint] = useState(true)
@@ -146,6 +148,9 @@ export default function App() {
     <FinalSection key="final" />,
   ]
 
+  // Tela de carregamento real
+  if (!isAppReady) return <SplashScreen />
+
   return (
     <>
       <StarBackground />
@@ -176,7 +181,7 @@ export default function App() {
               ))}
             </div>
 
-            {/* Seções com swipe */}
+            {/* Seções com swipe e scroll */}
             <motion.div
               key="sections"
               initial={{ opacity: 0 }}
@@ -198,7 +203,7 @@ export default function App() {
               ))}
             </motion.div>
 
-            {/* Botão inferior com fade animado */}
+            {/* Botão scroll para próxima seção */}
             <AnimatePresence>
               {showScrollHint && (
                 <ScrollHintIndicator onClick={handleScrollHintClick} />
