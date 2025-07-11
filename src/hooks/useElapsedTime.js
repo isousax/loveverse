@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 export default function useElapsedTime(startDate) {
   const [timePassed, setTimePassed] = useState({
+    years: 0,
     days: 0,
     hours: 0,
     minutes: 0,
@@ -21,7 +22,20 @@ export default function useElapsedTime(startDate) {
       const minutes = Math.floor((totalSeconds % 3600) / 60)
       const seconds = totalSeconds % 60
 
-      setTimePassed({ days, hours, minutes, seconds })
+      // Calcular anos
+      let years = now.getFullYear() - startDate.getFullYear()
+      const currentMonth = now.getMonth()
+      const currentDay = now.getDate()
+      const startMonth = startDate.getMonth()
+      const startDay = startDate.getDate()
+
+      const hasHadAnniversary =
+        currentMonth > startMonth ||
+        (currentMonth === startMonth && currentDay >= startDay)
+
+      if (!hasHadAnniversary) years--
+
+      setTimePassed({ years, days, hours, minutes, seconds })
     }
 
     updateTime()

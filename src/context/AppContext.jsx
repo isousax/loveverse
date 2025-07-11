@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from 'react'
 const AppContext = createContext()
 
 export function AppProvider({ children }) {
-  // Aqui você pode colocar outros estados globais
+  // Estados globais
   const [startDate] = useState(new Date(2025, 6, 4))
 
   return (

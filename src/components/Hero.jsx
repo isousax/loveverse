@@ -17,6 +17,13 @@ export default function Hero() {
     visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: 'easeOut' } },
   }
 
+  const labels = {
+    days: 'dias',
+    hours: 'horas',
+    minutes: 'minutos',
+    seconds: 'segundos',
+  }
+
   return (
     <section
       className="relative flex flex-col items-center justify-center px-6 text-center text-white snap-start snap-always overflow-hidden pb-12 md:pb-0"
@@ -41,6 +48,7 @@ export default function Hero() {
           Uma jornada de amor e momentos inesquecíveis
         </motion.p>
 
+        {/* Sol e órbita */}
         <motion.div className="relative mb-10 w-48 h-48 md:w-64 md:h-64" variants={itemVariants}>
           <div
             className="absolute top-1/2 left-1/2 rounded-full bg-yellow-400"
@@ -77,6 +85,7 @@ export default function Hero() {
           </div>
         </motion.div>
 
+        {/* Contador */}
         <motion.div className="grid grid-cols-4 gap-6" variants={containerVariants}>
           {['days', 'hours', 'minutes', 'seconds'].map((label) => (
             <motion.div className="flex flex-col items-center" key={label} variants={itemVariants}>
@@ -84,12 +93,13 @@ export default function Hero() {
                 {tempo[label] !== undefined ? tempo[label].toString().padStart(2, '0') : '00'}
               </span>
               <span className="mt-1 text-sm text-purple-200 md:text-lg">
-                {label === 'days' ? 'dias' : label}
+                {labels[label]}
               </span>
             </motion.div>
           ))}
         </motion.div>
 
+        {/* Frase de tempo */}
         <motion.div
           className="mt-6 w-full max-w-md text-base italic text-purple-200 md:text-xl md:whitespace-nowrap"
           variants={itemVariants}

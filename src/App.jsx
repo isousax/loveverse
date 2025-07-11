@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 import StarBackground from './components/StarBackground'
 import SplashScreen from './components/SplashScreen'
 import Intro from './components/Intro'
@@ -18,14 +17,7 @@ import { introPhraseData } from './data/introPhraseData'
 
 function ScrollHintIndicator({ onClick }) {
   return (
-    <motion.div
-      key="scroll-hint"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 10 }}
-      transition={{ duration: 0.5 }}
-      className="fixed inset-x-0 bottom-4 flex justify-center pointer-events-none z-50"
-    >
+    <div className="fixed inset-x-0 bottom-4 flex justify-center pointer-events-none z-50">
       <div
         onClick={onClick}
         role="button"
@@ -49,7 +41,7 @@ function ScrollHintIndicator({ onClick }) {
           <path d="M7 10l5 5 5-5" />
         </svg>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -148,70 +140,57 @@ export default function App() {
     <FinalSection key="final" />,
   ]
 
-  // Tela de carregamento real
+  // Splash inicial
   if (!isAppReady) return <SplashScreen />
 
+  // Tela de introdução (sem transição)
+  if (showIntro) {
+    return (
+      <>
+        <StarBackground />
+        <div className="h-screen flex items-center justify-center">
+          <Intro onFinish={() => setShowIntro(false)} introPhraseData={introPhraseData} />
+        </div>
+      </>
+    )
+  }
+
+  // Conteúdo principal
   return (
     <>
       <StarBackground />
 
-      <AnimatePresence mode="wait">
-        {showIntro ? (
-          <motion.div
-            key="intro"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
-            className="h-screen flex items-center justify-center"
+      {/* Indicador lateral */}
+      <div className="section-indicator fixed right-8 top-1/2 transform -translate-y-1/2 flex flex-col gap-3 z-50">
+        {sections.map((_, i) => (
+          <div
+            key={i}
+            className={`section-dot w-3 h-3 rounded-full transition-transform duration-300 cursor-pointer ${i === activeIndex ? 'bg-white scale-125' : 'bg-white/30 scale-100'}`}
+            onClick={() => goToSection(i)}
+            aria-label={`Ir para seção ${i + 1}`}
+          ></div>
+        ))}
+      </div>
+
+      {/* Seções com swipe e scroll */}
+      <div
+        className="snap-y snap-mandatory scroll-smooth"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        {sections.map((section, i) => (
+          <section
+            key={i}
+            ref={(el) => (sectionsRef.current[i] = el)}
+            className="snap-start h-screen w-full"
           >
-            <Intro onFinish={() => setShowIntro(false)} introPhraseData={introPhraseData} />
-          </motion.div>
-        ) : (
-          <>
-            {/* Indicador lateral */}
-            <div className="section-indicator fixed right-8 top-1/2 transform -translate-y-1/2 flex flex-col gap-3 z-50">
-              {sections.map((_, i) => (
-                <div
-                  key={i}
-                  className={`section-dot w-3 h-3 rounded-full transition-transform duration-300 cursor-pointer ${i === activeIndex ? 'bg-white scale-125' : 'bg-white/30 scale-100'}`}
-                  onClick={() => goToSection(i)}
-                  aria-label={`Ir para seção ${i + 1}`}
-                ></div>
-              ))}
-            </div>
+            {section}
+          </section>
+        ))}
+      </div>
 
-            {/* Seções com swipe e scroll */}
-            <motion.div
-              key="sections"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
-              className="snap-y snap-mandatory scroll-smooth"
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-            >
-              {sections.map((section, i) => (
-                <section
-                  key={i}
-                  ref={(el) => (sectionsRef.current[i] = el)}
-                  className="snap-start h-screen w-full"
-                >
-                  {section}
-                </section>
-              ))}
-            </motion.div>
-
-            {/* Botão scroll para próxima seção */}
-            <AnimatePresence>
-              {showScrollHint && (
-                <ScrollHintIndicator onClick={handleScrollHintClick} />
-              )}
-            </AnimatePresence>
-          </>
-        )}
-      </AnimatePresence>
+      {/* Botão scroll para próxima seção */}
+      {showScrollHint && <ScrollHintIndicator onClick={handleScrollHintClick} />}
     </>
   )
 }

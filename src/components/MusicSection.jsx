@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+import { motion } from 'framer-motion'
 
 export default function MusicSection({ music }) {
   const { youtubeLink, title, description } = music
@@ -13,11 +14,25 @@ export default function MusicSection({ music }) {
     >
       <div className="container mx-auto px-4 relative z-10 overflow-hidden">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="mb-8 text-transparent text-3xl font-bold bg-gradient-to-r from-pink-500 via-purple-600 to-pink-500 bg-clip-text md:text-6xl">
+          {/* Título animado */}
+          <motion.h2
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="mb-8 text-transparent text-3xl font-bold bg-gradient-to-r from-pink-500 via-purple-600 to-pink-500 bg-clip-text md:text-6xl"
+          >
             {title}
-          </h2>
+          </motion.h2>
 
-          <div className="mt-12 mx-auto max-w-xl rounded-2xl bg-black/30 p-6 backdrop-blur-md border border-white/10 shadow-2xl">
+          {/* Bloco com vídeo e descrição */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="mt-12 mx-auto max-w-xl rounded-2xl bg-black/30 p-6 backdrop-blur-md border border-white/10 shadow-2xl"
+          >
             <iframe
               src={youtubeLink}
               width="100%"
@@ -30,7 +45,7 @@ export default function MusicSection({ music }) {
               allowFullScreen
             />
             <p className="mt-4 text-lg italic text-white/80">{description}</p>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
